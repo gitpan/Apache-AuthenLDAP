@@ -1,3 +1,9 @@
+2001-07-12	Christian Gilmore <cgilmore@tivoli.com>
+
+	o  Removed test for mod_perl-1.26 or higher.
+	o  Cleaned up documentation
+	o  Made release 0.61
+	
 2001-05-27	Christian Gilmore <cgilmore@tivoli.com>
 
 	o  Deprecated generic variable naming in favor of
@@ -20,4 +26,4 @@
 
 	o  Made first public releases 0.50 and 0.51
 
-$Id: ChangeLog,v 1.5 2001/05/27 20:52:15 cgilmore Exp $
+$Id: ChangeLog,v 1.6 2001/07/12 14:06:35 cgilmore Exp $

@@ -1,4 +1,4 @@
-# $Id: AuthenLDAP.pm,v 1.8 2001/05/27 19:38:24 cgilmore Exp $
+# $Id: AuthenLDAP.pm,v 1.10 2001/07/12 14:14:15 cgilmore Exp $
 #
 # Author          : Jason Bodnar, Christian Gilmore
 # Created On      : Dec 08 12:04:00 CDT 1999
@@ -271,7 +271,7 @@ use Data::Dumper;
 
 
 # Global variables
-$Apache::AuthenLDAP::VERSION = '0.60';
+$Apache::AuthenLDAP::VERSION = '0.61';
 
 
 ###############################################################################
@@ -292,7 +292,9 @@ sub handler {
     return AUTH_REQUIRED;
   }
   
-  if ($mod_perl::VERSION < 1.26) {
+  # The required patch was not introduced in 1.26. It is no longer
+  # promised to be included in any timeframe. Commenting out.
+  # if ($mod_perl::VERSION < 1.26) {
     # I shouldn't need to use the below lines as this module
     # should never be called if there was a cache hit.  Since
     # set_handlers() doesn't work properly until 1.26 (according
@@ -302,12 +304,12 @@ sub handler {
     # security implications in a general environment where you
     # might be using someone else's handlers upstream or
     # downstream...
-    my $cache_result = $r->notes('AuthenCache');
-    if ($cache_result eq 'hit') {
-      $r->log->debug("handler: upstream cache hit for username=$name");
-      return OK;
-    }
+  my $cache_result = $r->notes('AuthenCache');
+  if ($cache_result eq 'hit') {
+    $r->log->debug("handler: upstream cache hit for username=$name");
+    return OK;
   }
+  # }
 
   my $basedn = $r->dir_config('AuthenBaseDN') || "";
   my $ldapserver = $r->dir_config('AuthenLDAPServer') ||
@@ -397,15 +399,15 @@ Apache::AuthenLDAP - mod_perl LDAP Authentication Module
 
  # Any of the following variables can be set.
  # Defaults are listed to the right.
- PerlSetVar AuthenBaseDN o=Foo,c=Bar  # Default: Empty String ("")
- PerlSetVar LDAPServer   ldap.foo.com # Default: localhost
- PerlSetVar LDAPPort     389          # Default: 389 (standard LDAP port)
- PerlSetVar UidattrType  userid       # Default: uid
+ PerlSetVar AuthenBaseDN     o=Foo,c=Bar  # Default: Empty String ("")
+ PerlSetVar AuthenLDAPServer ldap.foo.com # Default: localhost
+ PerlSetVar AuthenLDAPPort   389          # Default: 389 (standard LDAP port)
+ PerlSetVar UidattrType      userid       # Default: uid
 
  PerlAuthenHandler Apache::AuthenLDAP
 
- require valid-user                   # Any Valid LDAP User
-                                      # Matching Attribute and Value
+ require valid-user                       # Any Valid LDAP User
+                                          # Matching Attribute and Value
  </Directory>
 
 =head1 DESCRIPTION
@@ -461,7 +463,7 @@ identification. By default, AuthenUidAttrType is set to uid.
 
 This module has hooks built into it to handle Apache::AuthenCache
 version 0.04 and higher passing notes to avoid bugs in the
-set_handlers() method in mod_perl versions prior to 1.26.
+set_handlers() method in mod_perl versions 1.2x.
 
 =head1 AUTHORS
 
@@ -485,6 +487,12 @@ modify it under the terms of the IBM Public License.
 ###############################################################################
 ###############################################################################
 # $Log: AuthenLDAP.pm,v $
+# Revision 1.10  2001/07/12 14:14:15  cgilmore
+# See ChangeLog
+#
+# Revision 1.9  2001/07/12 14:06:35  cgilmore
+# see ChangeLog
+#
 # Revision 1.8  2001/05/27 19:38:24  cgilmore
 # see ChangeLog
 #

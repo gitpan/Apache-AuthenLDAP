@@ -1,4 +1,4 @@
-# $Id: AuthenLDAP.pm,v 1.5 2000/09/26 18:26:54 cgilmore Exp $
+# $Id: AuthenLDAP.pm,v 1.5 2000/09/26 18:26:54 cgilmore Exp cgilmore $
 #
 # Author          : Jason Bodnar, Christian Gilmore
 # Created On      : Dec 08 12:04:00 CDT 1999
@@ -270,7 +270,7 @@ use Data::Dumper;
 
 
 # Global variables
-$Apache::AuthenLDAP::VERSION = '0.50';
+$Apache::AuthenLDAP::VERSION = '0.51';
 
 
 ###############################################################################

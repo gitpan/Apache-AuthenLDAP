@@ -1,0 +1,9 @@
+# $Id: MANIFEST,v 1.1 2000/09/26 18:27:36 cgilmore Exp cgilmore $
+
+ChangeLog			History of this package
+INSTALL				Instructions for installing this package
+MANIFEST			This file
+Makefile.PL			Makefile generator
+AuthenLDAP.pm			The LDAP authentication module
+README				Get you started with this package
+SUPPORT				Links to support for this package

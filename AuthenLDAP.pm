@@ -1,4 +1,4 @@
-# $Id: AuthenLDAP.pm,v 1.7 2001/01/08 17:30:58 cgilmore Exp $
+# $Id: AuthenLDAP.pm,v 1.8 2001/05/27 19:38:24 cgilmore Exp $
 #
 # Author          : Jason Bodnar, Christian Gilmore
 # Created On      : Dec 08 12:04:00 CDT 1999
@@ -271,7 +271,7 @@ use Data::Dumper;
 
 
 # Global variables
-$Apache::AuthenLDAP::VERSION = '0.52';
+$Apache::AuthenLDAP::VERSION = '0.60';
 
 
 ###############################################################################
@@ -285,9 +285,6 @@ sub handler {
   my ($res, $sent_pwd) = $r->get_basic_auth_pw;
   return $res if $res;
   
-  # Clear for paranoid security precautions
-  $r->notes(AuthenLDAP => undef);
-
   my $name = $r->connection->user;
   unless ($name) {
     $r->note_basic_auth_failure;
@@ -312,10 +309,13 @@ sub handler {
     }
   }
 
-  my $basedn =      $r->dir_config('AuthenBaseDN') || "";
-  my $ldapserver =  $r->dir_config('LDAPServer') || "localhost";
-  my $ldapport =    $r->dir_config('LDAPPort') || 389;
-  my $uidattrtype = $r->dir_config('UidAttrType') || "uid";
+  my $basedn = $r->dir_config('AuthenBaseDN') || "";
+  my $ldapserver = $r->dir_config('AuthenLDAPServer') ||
+    $r->dir_config('LDAPServer') || "localhost";
+  my $ldapport = $r->dir_config('AuthenLDAPPort') ||
+    $r->dir_config('LDAPPort') || 389;
+  my $uidattrtype = $r->dir_config('AuthenUidAttrType') ||
+    $r->dir_config('UidAttrType') || "uid";
 
   $r->log->debug("AuthenBaseDN - $basedn; LDAPServer - $ldapserver; ", 
 		 "LDAPPort - $ldapport; UiaDttrType - $uidattrtype");
@@ -432,28 +432,28 @@ the AuthenBaseDN is empty.
 
 =over 4
 
-=item B<LDAPServer>
+=item B<AuthenLDAPServer>
 
-The hostname for the LDAP server to query. By default, LDAPServer
-is set to localhost.
+The hostname for the LDAP server to query. By default,
+AuthenLDAPServer is set to localhost.
 
 =back
 
 =over 4
 
-=item B<LDAPPort>
+=item B<AuthenLDAPPort>
 
 The port on which the LDAP server is listening. By default,
-LDAPPort is set to 389.
+AuthenLDAPPort is set to 389.
 
 =back
 
 =over 4
 
-=item B<UidAttrType>
+=item B<AuthenUidAttrType>
 
 The attribute type name that contains the user's
-identification. By default, UidAttrType is set to uid.
+identification. By default, AuthenUidAttrType is set to uid.
 
 =back
 
@@ -485,6 +485,9 @@ modify it under the terms of the IBM Public License.
 ###############################################################################
 ###############################################################################
 # $Log: AuthenLDAP.pm,v $
+# Revision 1.8  2001/05/27 19:38:24  cgilmore
+# see ChangeLog
+#
 # Revision 1.7  2001/01/08 17:30:58  cgilmore
 # added handling of blank userid and better handled set_handlers workaround
 #

@@ -1,10 +1,23 @@
+2001-05-27	Christian Gilmore <cgilmore@tivoli.com>
+
+	o  Deprecated generic variable naming in favor of
+	   module specific to reduce potential conflict with
+	   other auth modules: 
+	      LDAPServer  -> AuthenLDAPServer
+	      LDAPPort    -> AuthenLDAPPort
+	      UidAttrType -> AuthenUidAttrType
+           Original variable names are still accepted but will be removed
+           on the next major release.
+	o  Made release 0.60
+	
 2001-01-08	Christian Gilmore <cgilmore@tivoli.com>
 
 	o  Added handling of blank userid input
-        o  Better handled of pre-1.26 set_handlers bugs
+        o  Better handling of pre-1.26 set_handlers bugs
+	o  Made release 0.52
 
 2000-09-26	Christian Gilmore <cgilmore@tivoli.com>
 
-	o  Made first public release 0.50
+	o  Made first public releases 0.50 and 0.51
 
-$Id: ChangeLog,v 1.2 2001/01/08 17:31:22 cgilmore Exp $
+$Id: ChangeLog,v 1.5 2001/05/27 20:52:15 cgilmore Exp $

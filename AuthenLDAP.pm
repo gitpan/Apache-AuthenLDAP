@@ -1,4 +1,4 @@
-# $Id: AuthenLDAP.pm,v 1.5 2000/09/26 18:26:54 cgilmore Exp cgilmore $
+# $Id: AuthenLDAP.pm,v 1.7 2001/01/08 17:30:58 cgilmore Exp $
 #
 # Author          : Jason Bodnar, Christian Gilmore
 # Created On      : Dec 08 12:04:00 CDT 1999
@@ -263,6 +263,7 @@ package Apache::AuthenLDAP;
 
 # Required libraries
 use strict;
+use mod_perl ();
 use Apache::Constants ':common';
 use Apache::Log ();
 use Net::LDAP qw(:all);
@@ -270,7 +271,7 @@ use Data::Dumper;
 
 
 # Global variables
-$Apache::AuthenLDAP::VERSION = '0.51';
+$Apache::AuthenLDAP::VERSION = '0.52';
 
 
 ###############################################################################
@@ -288,18 +289,29 @@ sub handler {
   $r->notes(AuthenLDAP => undef);
 
   my $name = $r->connection->user;
+  unless ($name) {
+    $r->note_basic_auth_failure;
+    $r->log_reason("no username supplied", $r->uri);
+    return AUTH_REQUIRED;
+  }
   
-  # The below test is dubious. I'm putting it in as a hack around the 
-  # problems with set_handlers not working quite right and lookup_uri() 
-  # not refilling the stack for subrequests
-  # As of mod_perl-1.26, this code should never, ever get called.
-  my $cache_result = $r->notes('AuthenCache');
-  if ($cache_result eq 'hit') {
-    $r->log->debug("handler: upstream cache hit for username=$name");
-    return OK;
+  if ($mod_perl::VERSION < 1.26) {
+    # I shouldn't need to use the below lines as this module
+    # should never be called if there was a cache hit.  Since
+    # set_handlers() doesn't work properly until 1.26 (according
+    # to Doug MacEachern) I have to work around it by cobbling
+    # together cheat sheets for the previous and subsequent
+    # handlers in this phase. I get the willies about the
+    # security implications in a general environment where you
+    # might be using someone else's handlers upstream or
+    # downstream...
+    my $cache_result = $r->notes('AuthenCache');
+    if ($cache_result eq 'hit') {
+      $r->log->debug("handler: upstream cache hit for username=$name");
+      return OK;
+    }
   }
 
-  # Get configuration info
   my $basedn =      $r->dir_config('AuthenBaseDN') || "";
   my $ldapserver =  $r->dir_config('LDAPServer') || "localhost";
   my $ldapport =    $r->dir_config('LDAPPort') || 389;
@@ -462,7 +474,7 @@ httpd(8), ldap(3), mod_perl(1), slapd(8C)
 
 =head1 COPYRIGHT
  
-Copyright (C) 2000, International Business Machines Corporation
+Copyright (C) 2001, International Business Machines Corporation
 and others. All Rights Reserved.
  
 This module is free software; you can redistribute it and/or
@@ -473,6 +485,12 @@ modify it under the terms of the IBM Public License.
 ###############################################################################
 ###############################################################################
 # $Log: AuthenLDAP.pm,v $
+# Revision 1.7  2001/01/08 17:30:58  cgilmore
+# added handling of blank userid and better handled set_handlers workaround
+#
+# Revision 1.6  2001/01/08 17:26:35  cgilmore
+# released
+#
 # Revision 1.5  2000/09/26 18:26:54  cgilmore
 # updated to Apache-general from Tivoli namespace. Updated pod.
 #
